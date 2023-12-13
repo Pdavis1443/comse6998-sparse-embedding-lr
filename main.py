@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 import math
 from scipy.io import mmread
-from scipy.sparse import csr_array, lil_array
+from scipy.sparse import csr_array, lil_array, coo_array, vstack
 from scipy.sparse.linalg import lsqr
 import random
 
@@ -80,8 +80,33 @@ def sparse_embedding(X_train, X_test, y_train, y_test, k):
     print("\tTime to complete (s): " + str(runtime))
     print("\tTime performing Sparse reduction (s): " + str(time_reducing))
     print("\tIterations: " + str(itn))
+ 
+ # Adds gaussian noise to some entries of X, ensuring that it will remain sparse if X is sparse.
+def add_noise(X):
+    n, m = X.shape
+    E = lil_array((n ,m))
+    total_err_nnzs = min(math.ceil(n * m / 1000), m, n)
+    rows = random.sample(range(n), total_err_nnzs)
+    cols = random.sample(range(m), total_err_nnzs)
+    for (r, c) in zip(rows, cols):
+        E[r, c] = np.random.randn()
+    return X + E.tocsr()
+    
+# Replicates the matrices X and y to some duplicity, adding a random Gaussian Noise matrix in the process
+# The gaussian noise matrix is itself sparse, so each resulting replications will have no more than n*m/1000 additional
+# non-zero entries over the original.
+def replicate(X, y, reps, seed):
+    random.seed(seed)
+    yBig = np.vstack([y for i in range(reps)])
+    Xs = [add_noise(X) for i in range(reps)]
+    XBig = vstack(Xs)
+    return (XBig, yBig)
 
 X, y = get_c41()
+X, y = replicate(X, y, 10, 1337)
+
+print("X Shape (post reps):" + str(X.shape))
+print("y Shape (post reps): " + str(y.shape))
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
 
