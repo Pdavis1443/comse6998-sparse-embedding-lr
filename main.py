@@ -111,10 +111,9 @@ print("y Shape (post reps): " + str(y.shape))
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
 
 print("Data shapes: ", X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-
 full_lr(X_train, X_test, y_train, y_test)
-djl(X_train, X_test, y_train, y_test, 300)
-sparse_embedding(X_train, X_test, y_train, y_test, 1000)
+#djl(X_train, X_test, y_train, y_test, 300)
+sparse_embedding(X_train, X_test, y_train, y_test, 4000)
 
 
 
