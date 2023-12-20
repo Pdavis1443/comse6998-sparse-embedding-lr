@@ -139,10 +139,11 @@ def run(A, b, reps, k_sparse):
 
 
 A, b = get_data('illc1033.mtx', 'illc1033_b.mtx')
-reps = [400, 4_000, 40_000, 80_000, 200_000]
-k_sparse = 4000#40_000_000
+reps = [4000]#, 4_000, 40_000, 80_000, 200_000]
+k_sparses = [400, 800, 1600, 3200, 6400, 12_800, 25_600, 51_200]#40_000_000
 for rep in reps:
-    run(A, b, rep, k_sparse)
+    for k_sparse in k_sparses:
+        run(A, b, rep, k_sparse)
 
 # def djl(A, A, b, b, k):
 #     tick = time.time()
